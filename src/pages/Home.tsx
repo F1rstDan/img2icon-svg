@@ -118,6 +118,7 @@ export default function Home() {
     vectorizeParams.nodeDensity,
     vectorizeParams.smoothing,
     vectorizeParams.speckleFilter,
+    vectorizeParams.noBackground,
     vectorizeParams.backgroundColor,
     vectorizeParams.foregroundColor,
     runVectorize,

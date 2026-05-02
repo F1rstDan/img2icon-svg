@@ -2,6 +2,7 @@ import Segmented from "./Segmented";
 import SliderField from "./SliderField";
 import type { PreprocessParams } from "../types/workspace";
 import { cn } from "../lib/utils";
+import { CircleHelp } from "lucide-react";
 
 function clamp01(v: number) {
   return Math.max(0, Math.min(1, v));
@@ -98,7 +99,31 @@ export default function PreprocessPanel({ rasterLoaded, params, onChange }: Prop
           disabled={!rasterLoaded || !processed}
         />
         <div className="grid grid-cols-12 items-end gap-3">
-          <div className="col-span-12 text-xs text-zinc-400">透明通道</div>
+          <div className="col-span-12 flex items-center gap-2 text-xs text-zinc-400">
+            <span>透明通道背景色</span>
+            <span className="group relative inline-flex">
+              <button
+                type="button"
+                className="inline-flex h-5 w-5 items-center justify-center rounded-md text-zinc-400 ring-1 ring-transparent transition hover:text-zinc-200 hover:ring-white/10"
+                aria-label="透明通道背景色说明"
+              >
+                <CircleHelp className="h-4 w-4" />
+              </button>
+              <div className="pointer-events-none absolute left-1/2 top-full z-50 mt-2 w-80 -translate-x-1/2 rounded-2xl bg-zinc-950/95 p-3 text-xs text-zinc-200 opacity-0 shadow-xl ring-1 ring-white/10 backdrop-blur transition group-hover:opacity-100">
+                <div className="space-y-2 leading-relaxed">
+                  <div className="text-zinc-100">为什么需要设置背景色</div>
+                  <div className="text-zinc-300">
+                    透明 PNG 的透明像素也可能带有颜色信息（RGB）。追踪时如果把这些颜色当成背景或形状，容易出现结果空白或“外轮廓里被扣洞”。
+                  </div>
+                  <div className="text-zinc-100">如何选择</div>
+                  <div className="space-y-1 text-zinc-300">
+                    <div>1) 白色图标 + 透明背景：通常保持默认黑色背景即可更稳定地识别主体。</div>
+                    <div>2) 黑色/深色图标：把背景色切到白色，更容易拉开对比，追踪会更干净。</div>
+                  </div>
+                </div>
+              </div>
+            </span>
+          </div>
           <div className="col-span-12 flex flex-wrap items-center justify-between gap-3 rounded-2xl bg-zinc-950/30 p-3 ring-1 ring-white/10">
             <div className="text-sm text-zinc-200">添加背景色</div>
             <div className="flex items-center gap-2">
