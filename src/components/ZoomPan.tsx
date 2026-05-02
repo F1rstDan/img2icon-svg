@@ -8,6 +8,7 @@ type Props = {
   resetKey?: string | number;
   scale?: number;
   onScaleChange?: (next: number) => void;
+  onActiveScaleChange?: (next: number) => void;
   translate?: { x: number; y: number };
   onTranslateChange?: (next: { x: number; y: number }) => void;
   contentSize?: { width: number; height: number } | null;
@@ -22,6 +23,7 @@ export default function ZoomPan({
   resetKey,
   scale: controlledScale,
   onScaleChange,
+  onActiveScaleChange,
   translate: controlledTranslate,
   onTranslateChange,
   contentSize,
@@ -29,6 +31,17 @@ export default function ZoomPan({
   emptyHint,
 }: Props) {
   const rootRef = useRef<HTMLDivElement | null>(null);
+  const wheelStateRef = useRef({
+    tx: 0,
+    ty: 0,
+    activeZoom: 1,
+    activeScale: 1,
+    fitScale: 1,
+  });
+  const wheelCallbacksRef = useRef({
+    onScaleChange,
+    onTranslateChange,
+  });
   const [zoom, setZoom] = useState(1);
   const [fitScale, setFitScale] = useState(1);
   const [tx, setTx] = useState(0);
@@ -89,6 +102,59 @@ export default function ZoomPan({
     [tx, ty, activeScale],
   );
 
+  useEffect(() => {
+    wheelStateRef.current = {
+      tx,
+      ty,
+      activeZoom,
+      activeScale,
+      fitScale,
+    };
+  }, [tx, ty, activeZoom, activeScale, fitScale]);
+
+  useEffect(() => {
+    wheelCallbacksRef.current = {
+      onScaleChange,
+      onTranslateChange,
+    };
+  }, [onScaleChange, onTranslateChange]);
+
+  useEffect(() => {
+    onActiveScaleChange?.(activeScale);
+  }, [activeScale, onActiveScaleChange]);
+
+  useEffect(() => {
+    const el = rootRef.current;
+    if (!el) return;
+
+    const onWheel = (e: WheelEvent) => {
+      e.preventDefault();
+      const rect = el.getBoundingClientRect();
+      const cx = e.clientX - rect.left;
+      const cy = e.clientY - rect.top;
+
+      const { tx, ty, activeZoom, activeScale, fitScale } = wheelStateRef.current;
+      const delta = -e.deltaY;
+      const nextZoom = Math.max(
+        0.2,
+        Math.min(8, activeZoom * (delta > 0 ? 1.08 : 0.92)),
+      );
+      const nextScale = fitScale * nextZoom;
+
+      const k = nextScale / activeScale;
+      const ntx = cx - (cx - tx) * k;
+      const nty = cy - (cy - ty) * k;
+      setZoom(nextZoom);
+      wheelCallbacksRef.current.onScaleChange?.(nextZoom);
+      setTx(ntx);
+      setTy(nty);
+      wheelCallbacksRef.current.onTranslateChange?.({ x: ntx, y: nty });
+    };
+
+    el.addEventListener("wheel", onWheel, { passive: false });
+    return () => el.removeEventListener("wheel", onWheel);
+  }, []);
+
   const scaleOptions = useMemo(() => {
     const base = [0.5, 1, 1.5, 2, 3];
     const found = base.some((v) => Math.abs(v - activeZoom) < 0.001);
@@ -106,30 +172,6 @@ export default function ZoomPan({
         "relative h-full w-full select-none overflow-hidden rounded-2xl bg-zinc-950/40 ring-1 ring-white/10",
         className,
       )}
-      onWheel={(e) => {
-        e.preventDefault();
-        const el = rootRef.current;
-        if (!el) return;
-        const rect = el.getBoundingClientRect();
-        const cx = e.clientX - rect.left;
-        const cy = e.clientY - rect.top;
-
-        const delta = -e.deltaY;
-        const nextZoom = Math.max(
-          0.2,
-          Math.min(8, activeZoom * (delta > 0 ? 1.08 : 0.92)),
-        );
-        const nextScale = fitScale * nextZoom;
-
-        const k = nextScale / activeScale;
-        const ntx = cx - (cx - tx) * k;
-        const nty = cy - (cy - ty) * k;
-        setZoom(nextZoom);
-        onScaleChange?.(nextZoom);
-        setTx(ntx);
-        setTy(nty);
-        onTranslateChange?.({ x: ntx, y: nty });
-      }}
       onPointerDown={(e) => {
         e.preventDefault();
         (e.currentTarget as HTMLDivElement).setPointerCapture(e.pointerId);

@@ -244,11 +244,11 @@ function normalizeColor(c: string | undefined, fallback: string) {
 export function sanitizeAndLayerSvg(
   svgRaw: string,
   opts?: {
-    backgroundColor?: string;
+    backgroundColor?: string | null;
     foregroundColor?: string;
   },
 ) {
-  const backgroundColor = normalizeColor(opts?.backgroundColor, "#000000");
+  const backgroundColor = opts?.backgroundColor === null ? null : normalizeColor(opts?.backgroundColor, "#000000");
   const foregroundColor = normalizeColor(opts?.foregroundColor, "#ffffff");
   const doc = new DOMParser().parseFromString(svgRaw, "image/svg+xml");
   const srcSvg = doc.querySelector("svg");
@@ -318,7 +318,7 @@ export function sanitizeAndLayerSvg(
   if (!chosenKey && candidates.length > 0) chosenKey = candidates[0]?.key ?? null;
 
   const vb = vbNums;
-  if (vb) {
+  if (vb && backgroundColor != null) {
     const rect = doc.createElementNS(ns, "rect");
     rect.setAttribute("x", `${vb[0]}`);
     rect.setAttribute("y", `${vb[1]}`);

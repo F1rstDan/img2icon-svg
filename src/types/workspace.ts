@@ -13,6 +13,7 @@ export type VectorizeParams = {
   nodeDensity: number;
   smoothing: number;
   speckleFilter: number;
+  noBackground: boolean;
   backgroundColor: string;
   foregroundColor: string;
 };

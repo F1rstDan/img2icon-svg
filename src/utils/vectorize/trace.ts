@@ -36,7 +36,7 @@ export function vectorizeToSvg(imageData: ImageData, params: VectorizeParams): V
   });
 
   const svgText = sanitizeAndLayerSvg(svgRaw, {
-    backgroundColor: params.backgroundColor,
+    backgroundColor: params.noBackground ? null : params.backgroundColor,
     foregroundColor: params.foregroundColor,
   });
   const { pathCount, estimatedNodeCount } = analyzeSvg(svgText);

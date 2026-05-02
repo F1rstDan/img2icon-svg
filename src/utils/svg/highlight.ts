@@ -191,19 +191,19 @@ export function extractPathNodes(d: string) {
   return pts;
 }
 
-export function applyNodeHighlight(svg: SVGSVGElement) {
-  svg.querySelectorAll("[data-nodes='true']").forEach((n) => n.remove());
-
-  const vb = svg
-    .getAttribute("viewBox")
-    ?.trim()
-    .split(/\s+/)
-    .map((v) => parseFloat(v));
-  const w = vb && vb.length === 4 ? vb[2] : 1000;
-  const h = vb && vb.length === 4 ? vb[3] : 1000;
-  const r = Math.max(1.2, Math.min(w, h) / 140);
+export function applyNodeHighlight(svg: SVGSVGElement, scale?: number) {
+  const s = Math.max(0.0001, scale ?? 1);
+  const r = 3.5 / s;
 
   const ns = "http://www.w3.org/2000/svg";
+  const gs = Array.from(svg.querySelectorAll("[data-nodes='true']"));
+  const existing = gs[0] as SVGGElement | undefined;
+  gs.slice(1).forEach((n) => n.remove());
+  if (existing) {
+    existing.querySelectorAll("circle").forEach((c) => c.setAttribute("r", `${r}`));
+    return;
+  }
+
   const g = document.createElementNS(ns, "g");
   g.setAttribute("data-nodes", "true");
   g.setAttribute("fill", "#22d3ee");

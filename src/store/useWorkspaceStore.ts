@@ -35,6 +35,7 @@ const defaultVectorize: VectorizeParams = {
   nodeDensity: 0.6,
   smoothing: 0.25,
   speckleFilter: 0.2,
+  noBackground: true,
   backgroundColor: "#000000",
   foregroundColor: "#ffffff",
 };
