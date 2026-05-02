@@ -8,6 +8,7 @@ type Props = {
   resetKey?: string | number;
   scale?: number;
   onScaleChange?: (next: number) => void;
+  onActiveScaleChange?: (next: number) => void;
   translate?: { x: number; y: number };
   onTranslateChange?: (next: { x: number; y: number }) => void;
   contentSize?: { width: number; height: number } | null;
@@ -22,6 +23,7 @@ export default function ZoomPan({
   resetKey,
   scale: controlledScale,
   onScaleChange,
+  onActiveScaleChange,
   translate: controlledTranslate,
   onTranslateChange,
   contentSize,
@@ -88,6 +90,10 @@ export default function ZoomPan({
     () => `translate(${tx}px, ${ty}px) scale(${activeScale})`,
     [tx, ty, activeScale],
   );
+
+  useEffect(() => {
+    onActiveScaleChange?.(activeScale);
+  }, [activeScale, onActiveScaleChange]);
 
   const scaleOptions = useMemo(() => {
     const base = [0.5, 1, 1.5, 2, 3];

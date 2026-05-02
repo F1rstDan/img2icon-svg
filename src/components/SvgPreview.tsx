@@ -6,9 +6,10 @@ type Props = {
   svgText: string | null;
   className?: string;
   highlightNodes?: boolean;
+  nodeScale?: number;
 };
 
-export default function SvgPreview({ svgText, className, highlightNodes }: Props) {
+export default function SvgPreview({ svgText, className, highlightNodes, nodeScale }: Props) {
   if (!svgText) return null;
 
   const rootRef = useRef<HTMLDivElement | null>(null);
@@ -17,9 +18,12 @@ export default function SvgPreview({ svgText, className, highlightNodes }: Props
     if (!root) return;
     const svg = root.querySelector("svg") as SVGSVGElement | null;
     if (!svg) return;
-    svg.querySelectorAll("[data-nodes='true']").forEach((n) => n.remove());
-    if (highlightNodes) applyNodeHighlight(svg);
-  }, [svgText, highlightNodes]);
+    if (!highlightNodes) {
+      svg.querySelectorAll("[data-nodes='true']").forEach((n) => n.remove());
+      return;
+    }
+    applyNodeHighlight(svg, nodeScale);
+  }, [svgText, highlightNodes, nodeScale]);
 
   return (
     <div

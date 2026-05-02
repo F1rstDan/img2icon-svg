@@ -58,6 +58,7 @@ export default function Home() {
   const [helpPinned, setHelpPinned] = useState(false);
   const [helpHover, setHelpHover] = useState(false);
   const [zoomScale, setZoomScale] = useState(1);
+  const [svgActiveScale, setSvgActiveScale] = useState(1);
   const [pan, setPan] = useState({ x: 0, y: 0 });
   const [dragOver, setDragOver] = useState(false);
 
@@ -417,6 +418,7 @@ export default function Home() {
                 resetKey={`${raster?.name ?? "empty"}-svg`}
                 scale={zoomScale}
                 onScaleChange={setZoomScale}
+                onActiveScaleChange={setSvgActiveScale}
                 translate={pan}
                 onTranslateChange={setPan}
                 contentSize={contentSize}
@@ -434,6 +436,7 @@ export default function Home() {
                     <SvgPreview
                       svgText={result.svgText}
                       highlightNodes={highlightNodes}
+                      nodeScale={svgActiveScale}
                     />
                   </div>
                 ) : null}
