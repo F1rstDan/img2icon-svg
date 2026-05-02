@@ -22,7 +22,6 @@ export default function VectorizePanel({
       <div className="text-sm text-zinc-200">SVG导出参数</div>
       <div className="mt-4 space-y-5">
         <div className="grid grid-cols-12 items-end gap-3">
-          <div className="col-span-12 text-xs text-zinc-400">配色</div>
           <div className="col-span-5">
             <div className="text-xs text-zinc-300">背景色</div>
             <div className="mt-2 flex items-center gap-2">
@@ -41,16 +40,6 @@ export default function VectorizePanel({
                 disabled={disabled}
               />
             </div>
-            <label className="mt-2 inline-flex items-center gap-2 text-xs text-zinc-300">
-              <input
-                type="checkbox"
-                className="h-4 w-4 rounded border-white/10 bg-zinc-900/70 text-emerald-400 ring-1 ring-white/10"
-                checked={params.noBackground}
-                onChange={(e) => onChange({ noBackground: e.target.checked })}
-                disabled={disabled}
-              />
-              <span>不需要 SVG 背景色</span>
-            </label>
           </div>
           <div className="col-span-2 flex justify-center">
             <button
@@ -81,6 +70,18 @@ export default function VectorizePanel({
                 disabled={disabled}
               />
             </div>
+          </div>
+          <div className="col-span-12">
+            <label className="inline-flex items-center gap-2 text-xs text-zinc-300">
+              <input
+                type="checkbox"
+                className="h-4 w-4 rounded border-white/10 bg-zinc-900/70 text-emerald-400 ring-1 ring-white/10"
+                checked={params.noBackground}
+                onChange={(e) => onChange({ noBackground: e.target.checked })}
+                disabled={disabled}
+              />
+              <span>不需要 SVG 背景色</span>
+            </label>
           </div>
         </div>
 
