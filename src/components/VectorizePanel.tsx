@@ -23,36 +23,6 @@ export default function VectorizePanel({
       <div className="mt-4 space-y-5">
         <div className="grid grid-cols-12 items-end gap-3">
           <div className="col-span-5">
-            <div className="text-xs text-zinc-300">背景色</div>
-            <div className="mt-2 flex items-center gap-2">
-              <input
-                type="color"
-                value={params.backgroundColor}
-                onChange={(e) => onChange({ backgroundColor: e.target.value })}
-                className="h-9 w-10 cursor-pointer rounded-lg bg-transparent"
-                disabled={disabled}
-              />
-              <input
-                type="text"
-                value={params.backgroundColor}
-                onChange={(e) => onChange({ backgroundColor: e.target.value })}
-                className="h-9 w-full rounded-xl bg-zinc-900/70 px-3 text-sm text-zinc-100 ring-1 ring-white/10"
-                disabled={disabled}
-              />
-            </div>
-          </div>
-          <div className="col-span-2 flex justify-center">
-            <button
-              type="button"
-              onClick={() => onChange({ backgroundColor: params.foregroundColor, foregroundColor: params.backgroundColor })}
-              className="inline-flex h-9 w-9 items-center justify-center rounded-xl bg-zinc-900/70 ring-1 ring-white/10 hover:bg-zinc-900"
-              aria-label="交换颜色"
-              disabled={disabled}
-            >
-              <ArrowLeftRight className="h-4 w-4" />
-            </button>
-          </div>
-          <div className="col-span-5">
             <div className="text-xs text-zinc-300">主体色</div>
             <div className="mt-2 flex items-center gap-2">
               <input
@@ -71,17 +41,44 @@ export default function VectorizePanel({
               />
             </div>
           </div>
-          <div className="col-span-12">
+          <div className="col-span-2 flex justify-center">
+            <button
+              type="button"
+              onClick={() => onChange({ backgroundColor: params.foregroundColor, foregroundColor: params.backgroundColor })}
+              className="inline-flex h-9 w-9 items-center justify-center rounded-xl bg-zinc-900/70 ring-1 ring-white/10 hover:bg-zinc-900"
+              aria-label="交换颜色"
+              disabled={disabled}
+            >
+              <ArrowLeftRight className="h-4 w-4" />
+            </button>
+          </div>
+          <div className="col-span-5">
             <label className="inline-flex items-center gap-2 text-xs text-zinc-300">
               <input
                 type="checkbox"
                 className="h-4 w-4 rounded border-white/10 bg-zinc-900/70 text-emerald-400 ring-1 ring-white/10"
-                checked={params.noBackground}
-                onChange={(e) => onChange({ noBackground: e.target.checked })}
+                checked={!params.noBackground}
+                onChange={(e) => onChange({ noBackground: !e.target.checked })}
                 disabled={disabled}
               />
-              <span>不需要 SVG 背景色</span>
+              <span>背景色</span>
             </label>
+            <div className="mt-2 flex items-center gap-2">
+              <input
+                type="color"
+                value={params.backgroundColor}
+                onChange={(e) => onChange({ backgroundColor: e.target.value })}
+                className="h-9 w-10 cursor-pointer rounded-lg bg-transparent"
+                disabled={disabled}
+              />
+              <input
+                type="text"
+                value={params.backgroundColor}
+                onChange={(e) => onChange({ backgroundColor: e.target.value })}
+                className="h-9 w-full rounded-xl bg-zinc-900/70 px-3 text-sm text-zinc-100 ring-1 ring-white/10"
+                disabled={disabled}
+              />
+            </div>
           </div>
         </div>
 
