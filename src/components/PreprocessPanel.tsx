@@ -109,7 +109,7 @@ export default function PreprocessPanel({ rasterLoaded, params, onChange }: Prop
               >
                 <CircleHelp className="h-4 w-4" />
               </button>
-              <div className="pointer-events-none absolute left-1/2 top-full z-50 mt-2 w-80 -translate-x-1/2 rounded-2xl bg-zinc-950/95 p-3 text-xs text-zinc-200 opacity-0 shadow-xl ring-1 ring-white/10 backdrop-blur transition group-hover:opacity-100">
+              <div className="pointer-events-none absolute left-1/2 top-full z-50 mt-2 hidden w-80 -translate-x-1/2 rounded-2xl bg-zinc-950/95 p-3 text-xs text-zinc-200 opacity-0 shadow-xl ring-1 ring-white/10 backdrop-blur transition group-hover:block group-hover:opacity-100">
                 <div className="space-y-2 leading-relaxed">
                   <div className="text-zinc-100">为什么需要设置背景色</div>
                   <div className="text-zinc-300">
