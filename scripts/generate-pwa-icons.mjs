@@ -29,7 +29,7 @@ function writePng(png, outPath) {
 }
 
 const root = path.resolve(import.meta.dirname, '..')
-const inputPath = path.join(root, 'src/assets/test-icons/icon_rank_1.png')
+const inputPath = path.join(root, 'public/img2icon-svg.png')
 const outDir = path.join(root, 'public')
 
 const src = PNG.sync.read(fs.readFileSync(inputPath))
