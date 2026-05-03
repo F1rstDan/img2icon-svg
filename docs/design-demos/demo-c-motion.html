@@ -1,0 +1,764 @@
+<!doctype html>
+<html lang="zh-CN">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>方向 C · Field.io 运动诗学（克制版）</title>
+    <style>
+      :root {
+        color-scheme: dark;
+        --bg: oklch(0.16 0.02 255);
+        --surface: oklch(0.2 0.02 255 / 0.68);
+        --surface2: oklch(0.24 0.03 255 / 0.78);
+        --stroke: oklch(0.85 0.02 255 / 0.16);
+        --text: oklch(0.95 0.01 255 / 0.92);
+        --muted: oklch(0.9 0.01 255 / 0.62);
+        --accent: oklch(0.78 0.18 165);
+        --accent2: oklch(0.76 0.18 220);
+        --warn: oklch(0.78 0.17 65);
+        --radius: 18px;
+        --mono: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas,
+          "Liberation Mono", "Courier New", monospace;
+      }
+
+      * {
+        box-sizing: border-box;
+      }
+
+      body {
+        margin: 0;
+        font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "Noto Sans",
+          Helvetica, Arial, sans-serif;
+        background: radial-gradient(
+            1200px 900px at 15% 0%,
+            oklch(0.55 0.18 165 / 0.26),
+            transparent 60%
+          ),
+          radial-gradient(
+            1100px 900px at 85% 0%,
+            oklch(0.54 0.2 220 / 0.18),
+            transparent 62%
+          ),
+          radial-gradient(
+            900px 700px at 50% 110%,
+            oklch(0.5 0.12 65 / 0.14),
+            transparent 65%
+          ),
+          var(--bg);
+        color: var(--text);
+        overflow-x: hidden;
+      }
+
+      .grain {
+        position: fixed;
+        inset: 0;
+        pointer-events: none;
+        opacity: 0.08;
+        background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='240' height='240'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.9' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='240' height='240' filter='url(%23n)' opacity='.6'/%3E%3C/svg%3E");
+        mix-blend-mode: overlay;
+      }
+
+      .wrap {
+        max-width: 1200px;
+        margin: 0 auto;
+        padding: 28px 20px 44px;
+      }
+
+      .top {
+        display: flex;
+        align-items: flex-end;
+        justify-content: space-between;
+        gap: 18px;
+        flex-wrap: wrap;
+      }
+
+      h1 {
+        margin: 0;
+        font-size: 22px;
+        letter-spacing: -0.02em;
+      }
+
+      .sub {
+        margin-top: 8px;
+        color: var(--muted);
+        max-width: 90ch;
+        font-size: 13px;
+        line-height: 1.6;
+      }
+
+      .chips {
+        display: flex;
+        gap: 10px;
+        flex-wrap: wrap;
+        justify-content: flex-end;
+      }
+
+      .chip {
+        border: 1px solid var(--stroke);
+        background: var(--surface);
+        padding: 8px 10px;
+        border-radius: 999px;
+        font-size: 12px;
+        color: var(--muted);
+        backdrop-filter: blur(10px);
+      }
+
+      .chip strong {
+        color: var(--text);
+        font-weight: 600;
+      }
+
+      .board {
+        margin-top: 18px;
+        border: 1px solid var(--stroke);
+        border-radius: calc(var(--radius) + 8px);
+        background: linear-gradient(
+            180deg,
+            oklch(0.25 0.03 255 / 0.72),
+            oklch(0.18 0.02 255 / 0.76)
+          );
+        overflow: hidden;
+        box-shadow: 0 24px 60px rgba(0, 0, 0, 0.45);
+      }
+
+      .boardTop {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 12px;
+        padding: 14px 14px;
+        border-bottom: 1px solid var(--stroke);
+        background: oklch(0.18 0.02 255 / 0.5);
+        backdrop-filter: blur(12px);
+        flex-wrap: wrap;
+      }
+
+      .leftTop {
+        display: flex;
+        align-items: center;
+        gap: 12px;
+        flex-wrap: wrap;
+      }
+
+      .step {
+        display: inline-flex;
+        align-items: center;
+        gap: 10px;
+        padding: 8px 10px;
+        border-radius: 999px;
+        border: 1px solid var(--stroke);
+        background: var(--surface);
+        color: var(--muted);
+        font-size: 12px;
+      }
+
+      .step b {
+        color: var(--text);
+        font-family: var(--mono);
+        font-weight: 700;
+        font-size: 11px;
+        letter-spacing: 0.06em;
+      }
+
+      .rightTop {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        flex-wrap: wrap;
+        justify-content: flex-end;
+      }
+
+      .btn {
+        cursor: pointer;
+        border: 1px solid var(--stroke);
+        background: var(--surface);
+        color: var(--text);
+        padding: 9px 12px;
+        border-radius: 12px;
+        font-size: 12px;
+        letter-spacing: -0.01em;
+        backdrop-filter: blur(10px);
+        transition: transform 140ms ease, background 140ms ease,
+          border-color 140ms ease;
+      }
+
+      .btn:hover {
+        background: var(--surface2);
+      }
+
+      .btn:active {
+        transform: translateY(1px);
+      }
+
+      .btnPrimary {
+        border-color: oklch(0.75 0.18 165 / 0.42);
+        background: oklch(0.55 0.18 165 / 0.22);
+      }
+
+      .btnPrimary:hover {
+        background: oklch(0.55 0.18 165 / 0.3);
+      }
+
+      .grid {
+        display: grid;
+        grid-template-columns: 360px 1fr;
+        gap: 14px;
+        padding: 14px;
+      }
+
+      .panel {
+        border: 1px solid var(--stroke);
+        border-radius: var(--radius);
+        background: var(--surface);
+        backdrop-filter: blur(12px);
+        overflow: hidden;
+      }
+
+      .panelHead {
+        padding: 12px 12px;
+        border-bottom: 1px solid var(--stroke);
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 12px;
+      }
+
+      .panelHead h2 {
+        margin: 0;
+        font-size: 12px;
+        color: oklch(0.9 0.01 255 / 0.78);
+        letter-spacing: 0.08em;
+        text-transform: uppercase;
+        font-family: var(--mono);
+      }
+
+      .panelBody {
+        padding: 12px;
+      }
+
+      .group {
+        border: 1px solid oklch(0.9 0.01 255 / 0.14);
+        border-radius: 14px;
+        padding: 12px;
+        background: oklch(0.17 0.02 255 / 0.35);
+      }
+
+      .group + .group {
+        margin-top: 12px;
+      }
+
+      .groupTop {
+        display: flex;
+        justify-content: space-between;
+        gap: 12px;
+        align-items: baseline;
+      }
+
+      .groupTop div:first-child {
+        color: oklch(0.92 0.01 255 / 0.86);
+        font-size: 12px;
+      }
+
+      .groupTop div:last-child {
+        color: oklch(0.9 0.01 255 / 0.55);
+        font-size: 11px;
+        font-family: var(--mono);
+      }
+
+      .seg {
+        margin-top: 10px;
+        display: inline-flex;
+        gap: 4px;
+        padding: 4px;
+        border-radius: 999px;
+        border: 1px solid var(--stroke);
+        background: oklch(0.2 0.02 255 / 0.56);
+      }
+
+      .seg button {
+        cursor: pointer;
+        border: 0;
+        background: transparent;
+        color: var(--muted);
+        padding: 7px 10px;
+        border-radius: 999px;
+        font-size: 12px;
+      }
+
+      .seg button[data-active="true"] {
+        background: oklch(0.55 0.18 165 / 0.22);
+        border: 1px solid oklch(0.75 0.18 165 / 0.35);
+        color: var(--text);
+      }
+
+      input[type="range"] {
+        width: 100%;
+        accent-color: color-mix(in oklab, var(--accent) 78%, white 22%);
+      }
+
+      .row {
+        margin-top: 10px;
+      }
+
+      .rowTop {
+        display: flex;
+        align-items: baseline;
+        justify-content: space-between;
+        gap: 12px;
+      }
+
+      .rowTop span:first-child {
+        color: oklch(0.9 0.01 255 / 0.72);
+        font-size: 12px;
+      }
+
+      .rowTop span:last-child {
+        font-family: var(--mono);
+        font-size: 11px;
+        color: oklch(0.9 0.01 255 / 0.54);
+      }
+
+      .stage {
+        border: 1px solid var(--stroke);
+        border-radius: var(--radius);
+        overflow: hidden;
+        background: oklch(0.16 0.02 255 / 0.88);
+        position: relative;
+        min-height: 650px;
+      }
+
+      .stage::before {
+        content: "";
+        position: absolute;
+        inset: 0;
+        background: radial-gradient(
+            circle at 1px 1px,
+            oklch(0.92 0.01 255 / 0.09) 1px,
+            transparent 0
+          );
+        background-size: 16px 16px;
+        opacity: 0.9;
+        pointer-events: none;
+      }
+
+      .stageTop {
+        position: absolute;
+        left: 12px;
+        right: 12px;
+        top: 12px;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        gap: 10px;
+        z-index: 3;
+      }
+
+      .badge {
+        border: 1px solid var(--stroke);
+        background: oklch(0.2 0.02 255 / 0.52);
+        padding: 6px 10px;
+        border-radius: 999px;
+        font-size: 11px;
+        font-family: var(--mono);
+        color: oklch(0.9 0.01 255 / 0.74);
+        backdrop-filter: blur(10px);
+      }
+
+      .badgeLive {
+        border-color: oklch(0.75 0.18 165 / 0.44);
+        background: oklch(0.55 0.18 165 / 0.2);
+        color: oklch(0.94 0.01 255 / 0.92);
+      }
+
+      .stages {
+        position: absolute;
+        inset: 0;
+        padding: 50px 12px 12px;
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 12px;
+        z-index: 2;
+      }
+
+      .viewport {
+        border: 1px solid oklch(0.9 0.01 255 / 0.12);
+        border-radius: 16px;
+        overflow: hidden;
+        background: oklch(0.14 0.02 255 / 0.65);
+        position: relative;
+      }
+
+      .viewportTop {
+        position: absolute;
+        top: 10px;
+        left: 10px;
+        right: 10px;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        gap: 10px;
+        z-index: 2;
+        pointer-events: none;
+      }
+
+      .mini {
+        font-family: var(--mono);
+        font-size: 11px;
+        color: oklch(0.9 0.01 255 / 0.62);
+      }
+
+      .content {
+        position: absolute;
+        inset: 0;
+        display: grid;
+        place-items: center;
+        padding: 44px 14px 14px;
+      }
+
+      .tile {
+        width: min(420px, 92%);
+        aspect-ratio: 1/1;
+        border-radius: 22px;
+        border: 1px solid oklch(0.9 0.01 255 / 0.14);
+        background: radial-gradient(
+            650px 460px at 35% 20%,
+            oklch(0.55 0.18 220 / 0.55),
+            transparent 58%
+          ),
+          radial-gradient(
+            600px 400px at 70% 30%,
+            oklch(0.55 0.18 165 / 0.55),
+            transparent 62%
+          ),
+          oklch(0.12 0.02 255);
+        box-shadow: 0 20px 70px rgba(0, 0, 0, 0.55);
+        display: grid;
+        place-items: center;
+        transform: translateY(10px) scale(0.985);
+        opacity: 0;
+        animation: rise 700ms cubic-bezier(0.2, 0.7, 0.2, 1) forwards;
+      }
+
+      @keyframes rise {
+        to {
+          transform: translateY(0px) scale(1);
+          opacity: 1;
+        }
+      }
+
+      .tile svg {
+        width: 74%;
+        height: 74%;
+      }
+
+      .svgTile {
+        background: #000000;
+      }
+
+      .nodes {
+        display: none;
+      }
+
+      body[data-nodes="on"] .nodes {
+        display: block;
+      }
+
+      .footerNote {
+        margin-top: 16px;
+        border: 1px solid var(--stroke);
+        border-radius: var(--radius);
+        background: var(--surface);
+        backdrop-filter: blur(12px);
+        padding: 14px 14px;
+      }
+
+      .footerNote h3 {
+        margin: 0;
+        font-size: 13px;
+        letter-spacing: -0.01em;
+      }
+
+      .footerNote ul {
+        margin: 10px 0 0;
+        padding-left: 18px;
+        color: var(--muted);
+        line-height: 1.65;
+        font-size: 13px;
+      }
+
+      @media (max-width: 1120px) {
+        .grid {
+          grid-template-columns: 1fr;
+        }
+        .stage {
+          min-height: 560px;
+        }
+      }
+
+      @media (max-width: 980px) {
+        .stages {
+          grid-template-columns: 1fr;
+        }
+        .stage {
+          min-height: 980px;
+        }
+      }
+    </style>
+  </head>
+  <body data-tab="pre" data-nodes="off">
+    <div class="grain"></div>
+    <div class="wrap">
+      <div class="top">
+        <div>
+          <h1>方向 C · Field.io 运动诗学（克制版）</h1>
+          <div class="sub">
+            关键词：沉浸、过程感、节奏。暗色工作台不变，但用更一致的光影与动效把“预处理 → 生成”做成可被感知的事件，同时保持信息清晰，避免堆叠炫技。
+          </div>
+        </div>
+        <div class="chips">
+          <div class="chip"><strong>目标</strong> 过程更有质感</div>
+          <div class="chip"><strong>主角</strong> 预览与结果</div>
+          <div class="chip"><strong>风险</strong> 动效需可关</div>
+        </div>
+      </div>
+
+      <div class="board">
+        <div class="boardTop">
+          <div class="leftTop">
+            <div class="step"><b>01</b><span>导入</span></div>
+            <div class="step"><b>02</b><span>预处理</span></div>
+            <div class="step"><b>03</b><span>矢量化</span></div>
+          </div>
+          <div class="rightTop">
+            <button class="btn btnPrimary" type="button">复制 SVG</button>
+            <button class="btn" type="button">下载 SVG</button>
+          </div>
+        </div>
+
+        <div class="grid">
+          <div class="panel">
+            <div class="panelHead">
+              <h2>Controls</h2>
+              <div style="display: flex; gap: 8px; flex-wrap: wrap">
+                <button class="btn" id="toggleNodes" type="button">节点高亮</button>
+                <button class="btn" id="togglePulse" type="button">过程动效</button>
+              </div>
+            </div>
+            <div class="panelBody">
+              <div class="group">
+                <div class="groupTop">
+                  <div>导入</div>
+                  <div>PNG/JPG</div>
+                </div>
+                <div style="margin-top: 10px; display: grid; grid-template-columns: 1fr 1fr; gap: 10px">
+                  <button class="btn btnPrimary" type="button">选择文件</button>
+                  <button class="btn" type="button">载入示例</button>
+                </div>
+              </div>
+
+              <div class="group">
+                <div class="groupTop">
+                  <div>预处理预览</div>
+                  <div id="tabLabel">TAB: PRE</div>
+                </div>
+                <div class="seg" id="tabSeg">
+                  <button type="button" data-tab="raw" data-active="false">原图</button>
+                  <button type="button" data-tab="pre" data-active="true">预处理</button>
+                </div>
+                <div class="row">
+                  <div class="rowTop">
+                    <span>阈值</span>
+                    <span id="v1">171</span>
+                  </div>
+                  <input id="r1" type="range" min="0" max="255" value="171" />
+                </div>
+                <div class="row">
+                  <div class="rowTop">
+                    <span>边缘增强</span>
+                    <span id="v2">50%</span>
+                  </div>
+                  <input id="r2" type="range" min="0" max="100" value="50" />
+                </div>
+              </div>
+
+              <div class="group">
+                <div class="groupTop">
+                  <div>矢量化参数</div>
+                  <div>QUALITY</div>
+                </div>
+                <div class="row">
+                  <div class="rowTop">
+                    <span>节点数量</span>
+                    <span id="v3">90%</span>
+                  </div>
+                  <input id="r3" type="range" min="0" max="100" value="90" />
+                </div>
+                <div class="row">
+                  <div class="rowTop">
+                    <span>平滑</span>
+                    <span id="v4">25%</span>
+                  </div>
+                  <input id="r4" type="range" min="0" max="100" value="25" />
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div class="stage" id="stage">
+            <div class="stageTop">
+              <div class="badge badgeLive" id="liveBadge">PROCESS · LIVE</div>
+              <div class="badge">PATHS 5 · NODES≈98</div>
+            </div>
+            <div class="stages">
+              <div class="viewport">
+                <div class="viewportTop">
+                  <div class="badge">LEFT · PREVIEW</div>
+                  <div class="mini">Wheel · Drag</div>
+                </div>
+                <div class="content">
+                  <div class="tile" id="tileLeft">
+                    <svg viewBox="0 0 100 100" fill="none" aria-hidden="true">
+                      <path
+                        d="M18 28c0-6 4-10 10-10h44c6 0 10 4 10 10v44c0 6-4 10-10 10H28c-6 0-10-4-10-10V28Z"
+                        fill="rgba(255,255,255,0.92)"
+                      />
+                      <path
+                        d="M34 56 47 43c2-2 5-2 7 0l12 12c1 1 2 2 2 4v13H34V56Z"
+                        fill="rgba(255,255,255,0.92)"
+                      />
+                      <circle cx="66" cy="40" r="7" fill="rgba(255,255,255,0.92)" />
+                      <path
+                        d="M60 75c8 0 15-7 15-15S68 45 60 45"
+                        stroke="rgba(255,255,255,0.82)"
+                        stroke-width="6"
+                        stroke-linecap="round"
+                      />
+                    </svg>
+                  </div>
+                </div>
+              </div>
+
+              <div class="viewport">
+                <div class="viewportTop">
+                  <div class="badge">RIGHT · SVG</div>
+                  <div class="mini">Auto Fit</div>
+                </div>
+                <div class="content">
+                  <div class="tile svgTile" id="tileRight" style="animation-delay: 110ms">
+                    <svg viewBox="0 0 120 120" fill="none" aria-hidden="true">
+                      <path
+                        d="M22 34c0-7 5-12 12-12h52c7 0 12 5 12 12v52c0 7-5 12-12 12H34c-7 0-12-5-12-12V34Z"
+                        fill="#ffffff"
+                      />
+                      <path
+                        d="M39 68 55 52c2-2 6-2 8 0l15 15c2 2 3 4 3 7v19H39V68Z"
+                        fill="#ffffff"
+                      />
+                      <circle cx="78" cy="47" r="8" fill="#ffffff" />
+                      <g class="nodes">
+                        <circle cx="22" cy="34" r="2.2" fill="#6ee7ff" />
+                        <circle cx="34" cy="22" r="2.2" fill="#6ee7ff" />
+                        <circle cx="86" cy="22" r="2.2" fill="#6ee7ff" />
+                        <circle cx="98" cy="34" r="2.2" fill="#6ee7ff" />
+                        <circle cx="98" cy="86" r="2.2" fill="#6ee7ff" />
+                        <circle cx="86" cy="98" r="2.2" fill="#6ee7ff" />
+                        <circle cx="34" cy="98" r="2.2" fill="#6ee7ff" />
+                        <circle cx="22" cy="86" r="2.2" fill="#6ee7ff" />
+                        <circle cx="39" cy="68" r="2.2" fill="#6ee7ff" />
+                        <circle cx="55" cy="52" r="2.2" fill="#6ee7ff" />
+                        <circle cx="63" cy="52" r="2.2" fill="#6ee7ff" />
+                        <circle cx="78" cy="67" r="2.2" fill="#6ee7ff" />
+                      </g>
+                    </svg>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="footerNote">
+        <h3>方向说明（落地时的布局优化要点）</h3>
+        <ul>
+          <li>把“过程”可视化：处理中状态、进度、节点规模聚合在顶部一处，形成节奏锚点。</li>
+          <li>动效策略：只在“导入/参数变化 → 新结果出现”这一个时刻动，让用户把动效等同于反馈。</li>
+          <li>控件策略：面板保持克制，避免满屏微交互；需要时可提供“关闭动效”。</li>
+          <li>适合：需要更强“工具质感/沉浸感”的场景；不适合对比度敏感或偏打印/浅色风格的用户。</li>
+        </ul>
+      </div>
+    </div>
+
+    <script>
+      const tabSeg = document.getElementById("tabSeg");
+      const tabLabel = document.getElementById("tabLabel");
+      const tileLeft = document.getElementById("tileLeft");
+      const toggleNodes = document.getElementById("toggleNodes");
+      const togglePulse = document.getElementById("togglePulse");
+      const stage = document.getElementById("stage");
+      const liveBadge = document.getElementById("liveBadge");
+
+      function setTab(tab) {
+        document.body.dataset.tab = tab;
+        tabLabel.textContent = `TAB: ${tab.toUpperCase()}`;
+        const btns = tabSeg.querySelectorAll("button[data-tab]");
+        btns.forEach((b) => (b.dataset.active = b.dataset.tab === tab ? "true" : "false"));
+        tileLeft.style.filter =
+          tab === "raw" ? "none" : "contrast(1.25) saturate(0.92) brightness(0.98)";
+        pulse();
+      }
+
+      function pulse() {
+        if (document.body.dataset.pulse !== "on") return;
+        stage.animate(
+          [
+            { boxShadow: "0 24px 60px rgba(0,0,0,0.45)" },
+            { boxShadow: "0 24px 60px rgba(0,0,0,0.45), 0 0 0 2px oklch(0.75 0.18 165 / 0.22)" },
+            { boxShadow: "0 24px 60px rgba(0,0,0,0.45)" },
+          ],
+          { duration: 520, easing: "cubic-bezier(0.2,0.7,0.2,1)" },
+        );
+      }
+
+      tabSeg.addEventListener("click", (e) => {
+        const btn = e.target.closest("button");
+        if (!btn) return;
+        setTab(btn.dataset.tab);
+      });
+
+      toggleNodes.addEventListener("click", () => {
+        const on = document.body.dataset.nodes === "on";
+        document.body.dataset.nodes = on ? "off" : "on";
+        toggleNodes.classList.toggle("btnPrimary", !on);
+      });
+
+      togglePulse.addEventListener("click", () => {
+        const on = document.body.dataset.pulse === "on";
+        document.body.dataset.pulse = on ? "off" : "on";
+        togglePulse.classList.toggle("btnPrimary", !on);
+        liveBadge.textContent = !on ? "PROCESS · LIVE" : "PROCESS · STATIC";
+        pulse();
+      });
+
+      function bindRange(id, out, fmt) {
+        const el = document.getElementById(id);
+        const label = document.getElementById(out);
+        const apply = () => {
+          label.textContent = fmt(Number(el.value));
+          pulse();
+        };
+        el.addEventListener("input", apply);
+        apply();
+      }
+
+      bindRange("r1", "v1", (v) => String(Math.round(v)));
+      bindRange("r2", "v2", (v) => `${Math.round(v)}%`);
+      bindRange("r3", "v3", (v) => `${Math.round(v)}%`);
+      bindRange("r4", "v4", (v) => `${Math.round(v)}%`);
+      document.body.dataset.pulse = "on";
+      togglePulse.classList.add("btnPrimary");
+      setTab("pre");
+      pulse();
+    </script>
+  </body>
+</html>

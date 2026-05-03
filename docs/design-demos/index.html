@@ -1,0 +1,396 @@
+<!doctype html>
+<html lang="zh-CN">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>设计方向对比 · 单色图标转 SVG 工具</title>
+    <style>
+      :root {
+        color-scheme: light;
+        --bg: #0b0d10;
+        --panel: rgba(255, 255, 255, 0.06);
+        --panel-2: rgba(255, 255, 255, 0.09);
+        --stroke: rgba(255, 255, 255, 0.12);
+        --text: rgba(255, 255, 255, 0.92);
+        --muted: rgba(255, 255, 255, 0.62);
+        --accent: #4ade80;
+        --radius: 18px;
+      }
+
+      * {
+        box-sizing: border-box;
+      }
+
+      body {
+        margin: 0;
+        font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "Noto Sans",
+          Helvetica, Arial, sans-serif;
+        background: radial-gradient(
+            1200px 800px at 20% 0%,
+            rgba(74, 222, 128, 0.12),
+            transparent 55%
+          ),
+          radial-gradient(
+            900px 700px at 80% 10%,
+            rgba(56, 189, 248, 0.1),
+            transparent 60%
+          ),
+          var(--bg);
+        color: var(--text);
+      }
+
+      a {
+        color: inherit;
+        text-decoration: none;
+      }
+
+      .wrap {
+        max-width: 1180px;
+        margin: 0 auto;
+        padding: 28px 20px 40px;
+      }
+
+      .top {
+        display: flex;
+        align-items: flex-end;
+        justify-content: space-between;
+        gap: 18px;
+        flex-wrap: wrap;
+      }
+
+      .title {
+        display: flex;
+        flex-direction: column;
+        gap: 8px;
+      }
+
+      .title h1 {
+        margin: 0;
+        font-size: 22px;
+        letter-spacing: -0.02em;
+      }
+
+      .title p {
+        margin: 0;
+        color: var(--muted);
+        max-width: 78ch;
+        font-size: 13px;
+        line-height: 1.55;
+      }
+
+      .toolbar {
+        display: flex;
+        gap: 10px;
+        align-items: center;
+        flex-wrap: wrap;
+        justify-content: flex-end;
+      }
+
+      .btn {
+        border: 1px solid var(--stroke);
+        background: var(--panel);
+        color: var(--text);
+        padding: 9px 12px;
+        border-radius: 12px;
+        font-size: 13px;
+        cursor: pointer;
+        transition: transform 120ms ease, background 120ms ease;
+      }
+
+      .btn:hover {
+        background: var(--panel-2);
+      }
+
+      .btn:active {
+        transform: translateY(1px);
+      }
+
+      .grid {
+        margin-top: 18px;
+        display: grid;
+        grid-template-columns: repeat(12, 1fr);
+        gap: 14px;
+      }
+
+      .card {
+        grid-column: span 12;
+        border: 1px solid var(--stroke);
+        background: linear-gradient(
+          180deg,
+          rgba(255, 255, 255, 0.08),
+          rgba(255, 255, 255, 0.05)
+        );
+        border-radius: var(--radius);
+        overflow: hidden;
+        display: flex;
+        flex-direction: column;
+        min-height: 180px;
+      }
+
+      .cardHeader {
+        padding: 16px 16px 12px;
+        display: flex;
+        justify-content: space-between;
+        align-items: baseline;
+        gap: 12px;
+      }
+
+      .cardHeader h2 {
+        margin: 0;
+        font-size: 15px;
+        letter-spacing: -0.01em;
+      }
+
+      .tag {
+        font-size: 12px;
+        color: rgba(255, 255, 255, 0.7);
+        border: 1px solid rgba(255, 255, 255, 0.16);
+        background: rgba(0, 0, 0, 0.18);
+        border-radius: 999px;
+        padding: 4px 10px;
+        white-space: nowrap;
+      }
+
+      .cardBody {
+        padding: 0 16px 16px;
+        display: grid;
+        grid-template-columns: 1fr;
+        gap: 12px;
+      }
+
+      .cardBody p {
+        margin: 0;
+        color: var(--muted);
+        font-size: 13px;
+        line-height: 1.55;
+      }
+
+      .cardActions {
+        display: flex;
+        gap: 10px;
+        flex-wrap: wrap;
+        margin-top: 4px;
+      }
+
+      .primary {
+        border-color: rgba(74, 222, 128, 0.4);
+        background: rgba(74, 222, 128, 0.16);
+      }
+
+      .primary:hover {
+        background: rgba(74, 222, 128, 0.22);
+      }
+
+      .frameWrap {
+        margin-top: 14px;
+        border: 1px solid var(--stroke);
+        background: rgba(0, 0, 0, 0.2);
+        border-radius: var(--radius);
+        overflow: hidden;
+      }
+
+      .compareBar {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 12px;
+        padding: 12px 12px;
+        border-bottom: 1px solid var(--stroke);
+        background: rgba(0, 0, 0, 0.2);
+        flex-wrap: wrap;
+      }
+
+      .seg {
+        display: inline-flex;
+        padding: 4px;
+        border-radius: 999px;
+        border: 1px solid var(--stroke);
+        background: rgba(255, 255, 255, 0.06);
+        gap: 4px;
+      }
+
+      .seg button {
+        cursor: pointer;
+        border: 0;
+        background: transparent;
+        color: rgba(255, 255, 255, 0.74);
+        font-size: 12px;
+        padding: 6px 10px;
+        border-radius: 999px;
+      }
+
+      .seg button[data-active="true"] {
+        background: rgba(74, 222, 128, 0.18);
+        border: 1px solid rgba(74, 222, 128, 0.35);
+        color: rgba(255, 255, 255, 0.92);
+      }
+
+      .frameGrid {
+        display: grid;
+        grid-template-columns: 1fr;
+        gap: 0;
+      }
+
+      .frameGrid[data-cols="2"] {
+        grid-template-columns: 1fr 1fr;
+      }
+
+      .frameGrid[data-cols="3"] {
+        grid-template-columns: 1fr 1fr 1fr;
+      }
+
+      iframe {
+        width: 100%;
+        height: 720px;
+        border: 0;
+        background: transparent;
+      }
+
+      .frameCell {
+        border-right: 1px solid var(--stroke);
+      }
+
+      .frameCell:last-child {
+        border-right: 0;
+      }
+
+      @media (min-width: 920px) {
+        .card {
+          grid-column: span 4;
+        }
+        .frameGrid {
+          grid-template-columns: 1fr 1fr;
+        }
+      }
+
+      @media (max-width: 920px) {
+        iframe {
+          height: 740px;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <div class="wrap">
+      <div class="top">
+        <div class="title">
+          <h1>设计方向对比 · 单色图标转 SVG 工具</h1>
+          <p>
+            下面 3 个方向都围绕同一套信息架构「导入 → 预处理 → 矢量化 → 导出」，区别在于视觉语法、布局重心与交互节奏。先看 Demo 再决定要把真实项目往哪个方向迭代。
+          </p>
+        </div>
+        <div class="toolbar">
+          <a class="btn" href="../screenshot.png" target="_blank" rel="noreferrer">查看现状截图</a>
+          <button class="btn primary" id="openCompare">开启对比视图</button>
+        </div>
+      </div>
+
+      <div class="grid">
+        <div class="card">
+          <div class="cardHeader">
+            <h2>方向 A · Kenya Hara 式东方极简</h2>
+            <div class="tag">高端 / 留白 / 低噪声</div>
+          </div>
+          <div class="cardBody">
+            <p>
+              目标是把工具做得更像「纸面编辑台」：浅底、秩序感、把重点留给图像与结果；操作区更克制、层级更清晰。
+            </p>
+            <div class="cardActions">
+              <a class="btn primary" href="./demo-a-minimal.html" target="_blank" rel="noreferrer">打开 Demo</a>
+            </div>
+          </div>
+        </div>
+
+        <div class="card">
+          <div class="cardHeader">
+            <h2>方向 B · Pentagram 信息建筑</h2>
+            <div class="tag">高密度 / 结构化 / 可扫描</div>
+          </div>
+          <div class="cardBody">
+            <p>
+              用强网格与信息标签把参数变成「可读的仪表盘」：更适合频繁调参、追求效率的人群；密度更高但不凌乱。
+            </p>
+            <div class="cardActions">
+              <a class="btn primary" href="./demo-b-ia.html" target="_blank" rel="noreferrer">打开 Demo</a>
+            </div>
+          </div>
+        </div>
+
+        <div class="card">
+          <div class="cardHeader">
+            <h2>方向 C · Field.io 运动诗学（克制版）</h2>
+            <div class="tag">沉浸 / 动效 / 过程感</div>
+          </div>
+          <div class="cardBody">
+            <p>
+              保留暗色工作台，但用更一致的光影与动效把「预处理 → 生成」过程做成可感知的节奏，强化“结果出来了”的质感。
+            </p>
+            <div class="cardActions">
+              <a class="btn primary" href="./demo-c-motion.html" target="_blank" rel="noreferrer">打开 Demo</a>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="frameWrap" id="compareWrap" style="display: none">
+        <div class="compareBar">
+          <div style="display: flex; align-items: center; gap: 10px; flex-wrap: wrap">
+            <div style="font-size: 13px; color: rgba(255, 255, 255, 0.82)">对比视图</div>
+            <div class="seg" id="colsSeg">
+              <button type="button" data-cols="1" data-active="false">单列</button>
+              <button type="button" data-cols="2" data-active="true">双列</button>
+              <button type="button" data-cols="3" data-active="false">三列</button>
+            </div>
+          </div>
+          <button class="btn" id="closeCompare">收起</button>
+        </div>
+        <div class="frameGrid" id="frameGrid" data-cols="2">
+          <div class="frameCell">
+            <iframe title="Demo A" src="./demo-a-minimal.html"></iframe>
+          </div>
+          <div class="frameCell">
+            <iframe title="Demo B" src="./demo-b-ia.html"></iframe>
+          </div>
+          <div class="frameCell" id="cellC" style="display: none">
+            <iframe title="Demo C" src="./demo-c-motion.html"></iframe>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <script>
+      const compareWrap = document.getElementById("compareWrap");
+      const openCompare = document.getElementById("openCompare");
+      const closeCompare = document.getElementById("closeCompare");
+      const frameGrid = document.getElementById("frameGrid");
+      const colsSeg = document.getElementById("colsSeg");
+      const cellC = document.getElementById("cellC");
+
+      function setCols(n) {
+        frameGrid.dataset.cols = String(n);
+        const buttons = colsSeg.querySelectorAll("button[data-cols]");
+        buttons.forEach((b) => {
+          b.dataset.active = b.dataset.cols === String(n) ? "true" : "false";
+        });
+        cellC.style.display = n === 3 ? "block" : "none";
+      }
+
+      openCompare.addEventListener("click", () => {
+        compareWrap.style.display = "block";
+        compareWrap.scrollIntoView({ block: "start", behavior: "smooth" });
+      });
+
+      closeCompare.addEventListener("click", () => {
+        compareWrap.style.display = "none";
+      });
+
+      colsSeg.addEventListener("click", (e) => {
+        const btn = e.target.closest("button");
+        if (!btn) return;
+        const n = Number(btn.dataset.cols);
+        if (!Number.isFinite(n)) return;
+        setCols(n);
+      });
+    </script>
+  </body>
+</html>

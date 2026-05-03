@@ -1,0 +1,591 @@
+<!doctype html>
+<html lang="zh-CN">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>方向 B · Pentagram 信息建筑</title>
+    <style>
+      :root {
+        color-scheme: light;
+        --bg: #f3f5f6;
+        --paper: #ffffff;
+        --ink: #0f1216;
+        --muted: rgba(15, 18, 22, 0.64);
+        --line: rgba(15, 18, 22, 0.14);
+        --grid: rgba(15, 18, 22, 0.06);
+        --accent: #0a84ff;
+        --ok: #1a8f4b;
+        --radius: 14px;
+        --mono: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas,
+          "Liberation Mono", "Courier New", monospace;
+      }
+
+      * {
+        box-sizing: border-box;
+      }
+
+      body {
+        margin: 0;
+        font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "Noto Sans",
+          Helvetica, Arial, sans-serif;
+        background: linear-gradient(180deg, #f7f8f9, #eef1f3);
+        color: var(--ink);
+      }
+
+      .wrap {
+        max-width: 1220px;
+        margin: 0 auto;
+        padding: 18px 18px 44px;
+      }
+
+      .top {
+        display: grid;
+        grid-template-columns: 1fr auto;
+        gap: 16px;
+        align-items: end;
+      }
+
+      h1 {
+        margin: 0;
+        font-size: 18px;
+        letter-spacing: -0.02em;
+      }
+
+      .subtitle {
+        margin-top: 8px;
+        color: var(--muted);
+        font-size: 12px;
+        line-height: 1.55;
+        max-width: 86ch;
+      }
+
+      .statusBar {
+        display: inline-flex;
+        gap: 10px;
+        flex-wrap: wrap;
+        justify-content: flex-end;
+        align-items: center;
+      }
+
+      .stat {
+        display: inline-flex;
+        align-items: center;
+        gap: 8px;
+        font-size: 12px;
+        border: 1px solid var(--line);
+        background: rgba(255, 255, 255, 0.7);
+        padding: 8px 10px;
+        border-radius: 999px;
+      }
+
+      .dot {
+        width: 8px;
+        height: 8px;
+        border-radius: 999px;
+        background: rgba(15, 18, 22, 0.18);
+      }
+
+      .dot.ok {
+        background: rgba(26, 143, 75, 0.7);
+      }
+
+      .grid12 {
+        margin-top: 16px;
+        display: grid;
+        grid-template-columns: repeat(12, 1fr);
+        gap: 12px;
+        align-items: start;
+      }
+
+      .card {
+        border: 1px solid var(--line);
+        background: var(--paper);
+        border-radius: var(--radius);
+        overflow: hidden;
+        box-shadow: 0 12px 30px rgba(15, 18, 22, 0.06);
+      }
+
+      .cardHead {
+        padding: 10px 12px;
+        border-bottom: 1px solid var(--line);
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 10px;
+      }
+
+      .cardHead h2 {
+        margin: 0;
+        font-size: 12px;
+        letter-spacing: 0.02em;
+        text-transform: uppercase;
+        color: rgba(15, 18, 22, 0.72);
+        font-family: var(--mono);
+      }
+
+      .kbd {
+        font-family: var(--mono);
+        font-size: 11px;
+        color: rgba(15, 18, 22, 0.6);
+      }
+
+      .cardBody {
+        padding: 12px;
+      }
+
+      .controls {
+        grid-column: span 4;
+        display: grid;
+        gap: 12px;
+      }
+
+      .preview {
+        grid-column: span 8;
+        display: grid;
+        gap: 12px;
+      }
+
+      .row {
+        display: grid;
+        grid-template-columns: 1fr auto;
+        gap: 10px;
+        align-items: baseline;
+      }
+
+      .row label {
+        font-size: 12px;
+        color: rgba(15, 18, 22, 0.78);
+      }
+
+      .value {
+        font-family: var(--mono);
+        font-size: 11px;
+        color: rgba(15, 18, 22, 0.55);
+      }
+
+      input[type="range"] {
+        width: 100%;
+        accent-color: var(--accent);
+      }
+
+      .gridLines {
+        background-image: linear-gradient(var(--grid) 1px, transparent 1px),
+          linear-gradient(90deg, var(--grid) 1px, transparent 1px);
+        background-size: 18px 18px;
+      }
+
+      .seg {
+        display: inline-flex;
+        gap: 6px;
+        flex-wrap: wrap;
+      }
+
+      .seg button {
+        border: 1px solid var(--line);
+        background: rgba(255, 255, 255, 0.7);
+        border-radius: 12px;
+        padding: 8px 10px;
+        font-size: 12px;
+        cursor: pointer;
+      }
+
+      .seg button[data-active="true"] {
+        border-color: rgba(10, 132, 255, 0.35);
+        background: rgba(10, 132, 255, 0.12);
+      }
+
+      .btnRow {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 10px;
+      }
+
+      .btn {
+        border: 1px solid var(--line);
+        border-radius: 12px;
+        background: rgba(255, 255, 255, 0.75);
+        padding: 10px 12px;
+        font-size: 12px;
+        cursor: pointer;
+      }
+
+      .btnPrimary {
+        border-color: rgba(10, 132, 255, 0.35);
+        background: rgba(10, 132, 255, 0.12);
+      }
+
+      .btn:active {
+        transform: translateY(1px);
+      }
+
+      .split {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 12px;
+      }
+
+      .stage {
+        border: 1px solid var(--line);
+        border-radius: var(--radius);
+        overflow: hidden;
+        background: #0f1216;
+        position: relative;
+        min-height: 560px;
+      }
+
+      .stageTop {
+        position: absolute;
+        top: 10px;
+        left: 10px;
+        right: 10px;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        gap: 10px;
+        pointer-events: none;
+      }
+
+      .badge {
+        pointer-events: none;
+        background: rgba(255, 255, 255, 0.08);
+        border: 1px solid rgba(255, 255, 255, 0.14);
+        border-radius: 999px;
+        padding: 6px 10px;
+        font-family: var(--mono);
+        font-size: 11px;
+        color: rgba(255, 255, 255, 0.74);
+      }
+
+      .stageContent {
+        position: absolute;
+        inset: 0;
+        padding: 44px 14px 14px;
+        display: grid;
+        place-items: center;
+      }
+
+      .tile {
+        width: min(420px, 92%);
+        aspect-ratio: 1/1;
+        border-radius: 22px;
+        border: 1px solid rgba(255, 255, 255, 0.14);
+        background: radial-gradient(
+            650px 420px at 30% 20%,
+            rgba(10, 132, 255, 0.55),
+            rgba(10, 132, 255, 0.05) 55%,
+            rgba(0, 0, 0, 0.15) 80%
+          ),
+          #0a0d12;
+        box-shadow: 0 18px 45px rgba(15, 18, 22, 0.45);
+        display: grid;
+        place-items: center;
+      }
+
+      .tile svg {
+        width: 74%;
+        height: 74%;
+      }
+
+      .tileRaw {
+        filter: saturate(1) contrast(1);
+      }
+
+      .tilePre {
+        filter: saturate(0.9) contrast(1.25) brightness(1);
+      }
+
+      .svgTile {
+        background: #000000;
+      }
+
+      .nodes {
+        display: none;
+      }
+
+      body[data-nodes="on"] .nodes {
+        display: block;
+      }
+
+      .notes {
+        margin-top: 14px;
+        border: 1px solid var(--line);
+        border-radius: var(--radius);
+        background: rgba(255, 255, 255, 0.74);
+        padding: 14px 14px;
+      }
+
+      .notes h3 {
+        margin: 0;
+        font-size: 12px;
+        font-family: var(--mono);
+        text-transform: uppercase;
+        letter-spacing: 0.06em;
+        color: rgba(15, 18, 22, 0.72);
+      }
+
+      .notes ul {
+        margin: 10px 0 0;
+        padding-left: 18px;
+        color: var(--muted);
+        font-size: 13px;
+        line-height: 1.65;
+      }
+
+      @media (max-width: 1080px) {
+        .controls {
+          grid-column: span 12;
+        }
+        .preview {
+          grid-column: span 12;
+        }
+        .split {
+          grid-template-columns: 1fr;
+        }
+        .stage {
+          min-height: 480px;
+        }
+      }
+    </style>
+  </head>
+  <body data-tab="pre" data-nodes="off">
+    <div class="wrap">
+      <div class="top">
+        <div>
+          <h1>方向 B · Pentagram 信息建筑</h1>
+          <div class="subtitle">
+            关键词：强网格、可扫描、参数结构化。把“控件”本身当作信息，让用户一眼知道当前状态与可调范围，适合频繁调参的工作流。
+          </div>
+        </div>
+        <div class="statusBar">
+          <div class="stat"><span class="dot ok"></span><span>已载入</span></div>
+          <div class="stat"><span class="dot"></span><span>生成中</span></div>
+          <div class="stat"><span class="dot ok"></span><span>路径 5</span></div>
+          <div class="stat"><span class="dot ok"></span><span>节点≈98</span></div>
+        </div>
+      </div>
+
+      <div class="grid12">
+        <div class="controls">
+          <div class="card">
+            <div class="cardHead">
+              <h2>Import</h2>
+              <div class="kbd">Drag / Paste</div>
+            </div>
+            <div class="cardBody">
+              <div class="btnRow">
+                <button class="btn btnPrimary" type="button">选择文件</button>
+                <button class="btn" type="button">载入示例</button>
+              </div>
+              <div style="margin-top: 10px; color: var(--muted); font-size: 12px; line-height: 1.55">
+                信息建筑方向会把“状态信息”放在更显眼的位置（上方 status
+                chips），让用户快速确认流程进度与结果规模。
+              </div>
+            </div>
+          </div>
+
+          <div class="card">
+            <div class="cardHead">
+              <h2>Preprocess</h2>
+              <div class="kbd">Tab</div>
+            </div>
+            <div class="cardBody">
+              <div class="seg" id="tabSeg">
+                <button type="button" data-tab="raw" data-active="false">原图</button>
+                <button type="button" data-tab="pre" data-active="true">预处理</button>
+              </div>
+              <div style="margin-top: 12px">
+                <div class="row">
+                  <label>阈值</label>
+                  <div class="value" id="v1">171</div>
+                </div>
+                <input id="r1" type="range" min="0" max="255" value="171" />
+              </div>
+              <div style="margin-top: 12px">
+                <div class="row">
+                  <label>对比度</label>
+                  <div class="value" id="v2">12</div>
+                </div>
+                <input id="r2" type="range" min="-60" max="60" value="12" />
+              </div>
+              <div style="margin-top: 12px">
+                <div class="row">
+                  <label>背景去除</label>
+                  <div class="value" id="v3">25%</div>
+                </div>
+                <input id="r3" type="range" min="0" max="100" value="25" />
+              </div>
+            </div>
+          </div>
+
+          <div class="card">
+            <div class="cardHead">
+              <h2>Vectorize</h2>
+              <div class="kbd">Auto</div>
+            </div>
+            <div class="cardBody">
+              <div style="margin-top: 2px">
+                <div class="row">
+                  <label>节点数量</label>
+                  <div class="value" id="v4">90%</div>
+                </div>
+                <input id="r4" type="range" min="0" max="100" value="90" />
+              </div>
+              <div style="margin-top: 12px">
+                <div class="row">
+                  <label>平滑</label>
+                  <div class="value" id="v5">25%</div>
+                </div>
+                <input id="r5" type="range" min="0" max="100" value="25" />
+              </div>
+              <div style="margin-top: 12px">
+                <div class="row">
+                  <label>斑点过滤</label>
+                  <div class="value" id="v6">15%</div>
+                </div>
+                <input id="r6" type="range" min="0" max="100" value="15" />
+              </div>
+              <div style="margin-top: 12px" class="btnRow">
+                <button class="btn btnPrimary" type="button">复制 SVG</button>
+                <button class="btn" type="button">下载 SVG</button>
+              </div>
+              <div style="margin-top: 10px" class="seg">
+                <button id="toggleNodes" type="button" data-active="false">节点高亮</button>
+                <button type="button">复位</button>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="preview">
+          <div class="card">
+            <div class="cardHead">
+              <h2>Workbench</h2>
+              <div class="kbd">Synced Zoom</div>
+            </div>
+            <div class="cardBody">
+              <div class="split">
+                <div class="stage gridLines">
+                  <div class="stageTop">
+                    <div class="badge">LEFT · PREVIEW</div>
+                    <div class="badge" id="stageState">TAB: PRE</div>
+                  </div>
+                  <div class="stageContent">
+                    <div class="tile tilePre" id="tileLeft">
+                      <svg viewBox="0 0 100 100" fill="none" aria-hidden="true">
+                        <path
+                          d="M18 28c0-6 4-10 10-10h44c6 0 10 4 10 10v44c0 6-4 10-10 10H28c-6 0-10-4-10-10V28Z"
+                          fill="rgba(255,255,255,0.92)"
+                        />
+                        <path
+                          d="M34 56 47 43c2-2 5-2 7 0l12 12c1 1 2 2 2 4v13H34V56Z"
+                          fill="rgba(255,255,255,0.92)"
+                        />
+                        <circle cx="66" cy="40" r="7" fill="rgba(255,255,255,0.92)" />
+                        <path
+                          d="M60 75c8 0 15-7 15-15S68 45 60 45"
+                          stroke="rgba(255,255,255,0.82)"
+                          stroke-width="6"
+                          stroke-linecap="round"
+                        />
+                      </svg>
+                    </div>
+                  </div>
+                </div>
+
+                <div class="stage svgTile">
+                  <div class="stageTop">
+                    <div class="badge">RIGHT · SVG</div>
+                    <div class="badge">PATHS: 5</div>
+                  </div>
+                  <div class="stageContent">
+                    <div class="tile svgTile">
+                      <svg viewBox="0 0 120 120" fill="none" aria-hidden="true">
+                        <path
+                          d="M22 34c0-7 5-12 12-12h52c7 0 12 5 12 12v52c0 7-5 12-12 12H34c-7 0-12-5-12-12V34Z"
+                          fill="#ffffff"
+                        />
+                        <path
+                          d="M39 68 55 52c2-2 6-2 8 0l15 15c2 2 3 4 3 7v19H39V68Z"
+                          fill="#ffffff"
+                        />
+                        <circle cx="78" cy="47" r="8" fill="#ffffff" />
+                        <g class="nodes">
+                          <circle cx="22" cy="34" r="2.2" fill="#6ee7ff" />
+                          <circle cx="34" cy="22" r="2.2" fill="#6ee7ff" />
+                          <circle cx="86" cy="22" r="2.2" fill="#6ee7ff" />
+                          <circle cx="98" cy="34" r="2.2" fill="#6ee7ff" />
+                          <circle cx="98" cy="86" r="2.2" fill="#6ee7ff" />
+                          <circle cx="86" cy="98" r="2.2" fill="#6ee7ff" />
+                          <circle cx="34" cy="98" r="2.2" fill="#6ee7ff" />
+                          <circle cx="22" cy="86" r="2.2" fill="#6ee7ff" />
+                          <circle cx="39" cy="68" r="2.2" fill="#6ee7ff" />
+                          <circle cx="55" cy="52" r="2.2" fill="#6ee7ff" />
+                          <circle cx="63" cy="52" r="2.2" fill="#6ee7ff" />
+                          <circle cx="78" cy="67" r="2.2" fill="#6ee7ff" />
+                        </g>
+                      </svg>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div class="notes">
+            <h3>Direction Notes</h3>
+            <ul>
+              <li>结构手段：强网格 + 大量“状态标签”，让页面变得可扫描、可对照。</li>
+              <li>布局优化点：把预处理与矢量化参数按“输入/处理/输出”分组，减少跨区跳转。</li>
+              <li>交互建议：状态 chip 统一承载「处理中 / 路径数 / 节点估算」等反馈，避免散落到各处。</li>
+              <li>适合：偏工程与效率的用户；不适合追求强品牌感与情绪化表达的落地页式工具。</li>
+            </ul>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <script>
+      const tabSeg = document.getElementById("tabSeg");
+      const tileLeft = document.getElementById("tileLeft");
+      const stageState = document.getElementById("stageState");
+      const toggleNodes = document.getElementById("toggleNodes");
+
+      function setTab(tab) {
+        document.body.dataset.tab = tab;
+        stageState.textContent = `TAB: ${tab.toUpperCase()}`;
+        const btns = tabSeg.querySelectorAll("button[data-tab]");
+        btns.forEach((b) => (b.dataset.active = b.dataset.tab === tab ? "true" : "false"));
+        tileLeft.classList.toggle("tileRaw", tab === "raw");
+        tileLeft.classList.toggle("tilePre", tab !== "raw");
+      }
+
+      tabSeg.addEventListener("click", (e) => {
+        const btn = e.target.closest("button");
+        if (!btn) return;
+        setTab(btn.dataset.tab);
+      });
+
+      toggleNodes.addEventListener("click", () => {
+        const on = document.body.dataset.nodes === "on";
+        document.body.dataset.nodes = on ? "off" : "on";
+        toggleNodes.dataset.active = on ? "false" : "true";
+      });
+
+      function bindRange(id, out, fmt) {
+        const el = document.getElementById(id);
+        const label = document.getElementById(out);
+        const apply = () => (label.textContent = fmt(Number(el.value)));
+        el.addEventListener("input", apply);
+        apply();
+      }
+
+      bindRange("r1", "v1", (v) => String(Math.round(v)));
+      bindRange("r2", "v2", (v) => String(Math.round(v)));
+      bindRange("r3", "v3", (v) => `${Math.round(v)}%`);
+      bindRange("r4", "v4", (v) => `${Math.round(v)}%`);
+      bindRange("r5", "v5", (v) => `${Math.round(v)}%`);
+      bindRange("r6", "v6", (v) => `${Math.round(v)}%`);
+      setTab("pre");
+    </script>
+  </body>
+</html>

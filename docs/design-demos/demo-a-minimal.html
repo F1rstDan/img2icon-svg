@@ -1,0 +1,607 @@
+<!doctype html>
+<html lang="zh-CN">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>方向 A · Kenya Hara 式东方极简</title>
+    <style>
+      :root {
+        color-scheme: light;
+        --paper: #f6f4ef;
+        --ink: #121316;
+        --muted: rgba(18, 19, 22, 0.62);
+        --line: rgba(18, 19, 22, 0.14);
+        --soft: rgba(18, 19, 22, 0.06);
+        --accent: #c3562d;
+        --radius: 18px;
+        --mono: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas,
+          "Liberation Mono", "Courier New", monospace;
+        --serif: ui-serif, "Iowan Old Style", "Palatino Linotype", Palatino, serif;
+      }
+
+      * {
+        box-sizing: border-box;
+      }
+
+      body {
+        margin: 0;
+        font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "Noto Sans",
+          Helvetica, Arial, sans-serif;
+        background: radial-gradient(
+            1200px 900px at 10% 0%,
+            rgba(195, 86, 45, 0.11),
+            transparent 55%
+          ),
+          radial-gradient(
+            1000px 800px at 80% 0%,
+            rgba(18, 19, 22, 0.06),
+            transparent 60%
+          ),
+          var(--paper);
+        color: var(--ink);
+      }
+
+      a {
+        color: inherit;
+        text-decoration: none;
+      }
+
+      .wrap {
+        max-width: 1180px;
+        margin: 0 auto;
+        padding: 26px 18px 40px;
+      }
+
+      .header {
+        display: flex;
+        align-items: flex-end;
+        justify-content: space-between;
+        gap: 16px;
+        flex-wrap: wrap;
+      }
+
+      .brand h1 {
+        margin: 0;
+        font-family: var(--serif);
+        font-weight: 600;
+        letter-spacing: -0.03em;
+        font-size: 26px;
+      }
+
+      .brand p {
+        margin: 8px 0 0;
+        color: var(--muted);
+        max-width: 78ch;
+        line-height: 1.55;
+        font-size: 13px;
+      }
+
+      .meta {
+        display: flex;
+        gap: 10px;
+        flex-wrap: wrap;
+        justify-content: flex-end;
+      }
+
+      .pill {
+        border: 1px solid var(--line);
+        background: rgba(255, 255, 255, 0.55);
+        padding: 8px 11px;
+        border-radius: 999px;
+        font-size: 12px;
+        color: var(--muted);
+      }
+
+      .pill strong {
+        color: var(--ink);
+        font-weight: 600;
+      }
+
+      .workbench {
+        margin-top: 18px;
+        display: grid;
+        grid-template-columns: 320px 1fr;
+        gap: 16px;
+        align-items: start;
+      }
+
+      .panel {
+        border: 1px solid var(--line);
+        border-radius: var(--radius);
+        background: rgba(255, 255, 255, 0.56);
+        box-shadow: 0 12px 30px rgba(18, 19, 22, 0.08);
+        overflow: hidden;
+      }
+
+      .panelHeader {
+        padding: 14px 14px 10px;
+        border-bottom: 1px solid var(--line);
+        display: flex;
+        align-items: baseline;
+        justify-content: space-between;
+        gap: 10px;
+      }
+
+      .panelHeader h2 {
+        margin: 0;
+        font-size: 13px;
+        letter-spacing: -0.01em;
+      }
+
+      .panelHeader span {
+        font-family: var(--mono);
+        font-size: 11px;
+        color: rgba(18, 19, 22, 0.55);
+      }
+
+      .panelBody {
+        padding: 14px;
+      }
+
+      .section {
+        padding: 12px;
+        border: 1px solid var(--line);
+        border-radius: 14px;
+        background: rgba(246, 244, 239, 0.9);
+      }
+
+      .section + .section {
+        margin-top: 12px;
+      }
+
+      .sectionTitle {
+        display: flex;
+        justify-content: space-between;
+        gap: 12px;
+        align-items: baseline;
+      }
+
+      .sectionTitle div:first-child {
+        font-size: 12px;
+        color: rgba(18, 19, 22, 0.78);
+      }
+
+      .sectionTitle div:last-child {
+        font-family: var(--mono);
+        font-size: 11px;
+        color: rgba(18, 19, 22, 0.5);
+      }
+
+      .range {
+        margin-top: 10px;
+      }
+
+      input[type="range"] {
+        width: 100%;
+        accent-color: var(--accent);
+      }
+
+      .seg {
+        margin-top: 10px;
+        display: inline-flex;
+        border-radius: 999px;
+        border: 1px solid var(--line);
+        background: rgba(255, 255, 255, 0.6);
+        padding: 4px;
+        gap: 4px;
+      }
+
+      .seg button {
+        border: 0;
+        background: transparent;
+        cursor: pointer;
+        padding: 7px 10px;
+        border-radius: 999px;
+        font-size: 12px;
+        color: rgba(18, 19, 22, 0.62);
+      }
+
+      .seg button[data-active="true"] {
+        background: rgba(195, 86, 45, 0.12);
+        border: 1px solid rgba(195, 86, 45, 0.24);
+        color: rgba(18, 19, 22, 0.86);
+      }
+
+      .btnRow {
+        margin-top: 12px;
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 10px;
+      }
+
+      .btn {
+        border-radius: 12px;
+        border: 1px solid var(--line);
+        background: rgba(255, 255, 255, 0.7);
+        cursor: pointer;
+        padding: 10px 12px;
+        font-size: 12px;
+        letter-spacing: -0.01em;
+      }
+
+      .btnPrimary {
+        border-color: rgba(195, 86, 45, 0.35);
+        background: rgba(195, 86, 45, 0.12);
+      }
+
+      .btn:active {
+        transform: translateY(1px);
+      }
+
+      .main {
+        border: 1px solid var(--line);
+        border-radius: var(--radius);
+        background: rgba(255, 255, 255, 0.52);
+        box-shadow: 0 18px 40px rgba(18, 19, 22, 0.12);
+        overflow: hidden;
+      }
+
+      .mainTop {
+        padding: 14px 14px 10px;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 12px;
+        border-bottom: 1px solid var(--line);
+        flex-wrap: wrap;
+      }
+
+      .mainTop h2 {
+        margin: 0;
+        font-size: 13px;
+        letter-spacing: -0.01em;
+      }
+
+      .actions {
+        display: flex;
+        gap: 10px;
+        flex-wrap: wrap;
+      }
+
+      .actionBtn {
+        border: 1px solid var(--line);
+        background: rgba(255, 255, 255, 0.7);
+        border-radius: 999px;
+        padding: 7px 10px;
+        font-size: 12px;
+        cursor: pointer;
+      }
+
+      .actionBtn[data-on="true"] {
+        border-color: rgba(195, 86, 45, 0.32);
+        background: rgba(195, 86, 45, 0.12);
+      }
+
+      .split {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 12px;
+        padding: 12px;
+      }
+
+      .frame {
+        border: 1px solid var(--line);
+        border-radius: 14px;
+        background: rgba(246, 244, 239, 0.94);
+        position: relative;
+        overflow: hidden;
+        min-height: 520px;
+      }
+
+      .frameBar {
+        position: absolute;
+        left: 12px;
+        top: 12px;
+        display: inline-flex;
+        gap: 8px;
+        align-items: center;
+        font-size: 11px;
+        color: rgba(18, 19, 22, 0.55);
+      }
+
+      .frameBadge {
+        font-family: var(--mono);
+        border: 1px solid var(--line);
+        background: rgba(255, 255, 255, 0.66);
+        border-radius: 999px;
+        padding: 5px 8px;
+      }
+
+      .canvas {
+        position: absolute;
+        inset: 0;
+        display: grid;
+        place-items: center;
+        padding: 44px 18px 18px;
+      }
+
+      .canvasInner {
+        width: min(420px, 96%);
+        aspect-ratio: 1/1;
+        border-radius: 28px;
+        border: 1px solid rgba(18, 19, 22, 0.14);
+        background: linear-gradient(135deg, #6ea8ff, #5a6bff);
+        display: grid;
+        place-items: center;
+        box-shadow: 0 18px 35px rgba(18, 19, 22, 0.22);
+      }
+
+      .canvasInner svg {
+        width: 74%;
+        height: 74%;
+      }
+
+      .svgBoard {
+        width: min(420px, 96%);
+        aspect-ratio: 1/1;
+        border-radius: 20px;
+        border: 1px solid rgba(18, 19, 22, 0.2);
+        background: #0c0e12;
+        display: grid;
+        place-items: center;
+        box-shadow: 0 18px 35px rgba(18, 19, 22, 0.2);
+      }
+
+      .svgBoard svg {
+        width: 76%;
+        height: 76%;
+      }
+
+      .nodes {
+        display: none;
+      }
+
+      body[data-nodes="on"] .nodes {
+        display: block;
+      }
+
+      .guide {
+        margin-top: 16px;
+        display: grid;
+        grid-template-columns: 1fr;
+        gap: 10px;
+        padding: 16px;
+        border: 1px solid var(--line);
+        border-radius: var(--radius);
+        background: rgba(255, 255, 255, 0.55);
+      }
+
+      .guide h3 {
+        margin: 0;
+        font-size: 13px;
+        letter-spacing: -0.01em;
+      }
+
+      .guide ul {
+        margin: 0;
+        padding-left: 18px;
+        color: var(--muted);
+        line-height: 1.6;
+        font-size: 13px;
+      }
+
+      @media (max-width: 980px) {
+        .workbench {
+          grid-template-columns: 1fr;
+        }
+        .split {
+          grid-template-columns: 1fr;
+        }
+        .frame {
+          min-height: 460px;
+        }
+      }
+    </style>
+  </head>
+  <body data-nodes="off">
+    <div class="wrap">
+      <div class="header">
+        <div class="brand">
+          <h1>单色图标转 SVG</h1>
+          <p>
+            方向 A：把工作台做得像「纸面编辑台」。强调留白与秩序，减少控件噪声，让注意力自然落在图像与矢量结果。
+          </p>
+        </div>
+        <div class="meta">
+          <div class="pill"><strong>视觉温度</strong> 温润克制</div>
+          <div class="pill"><strong>适合</strong> 内容导向与品牌感</div>
+          <div class="pill"><strong>风险</strong> 密度不够需精简控件</div>
+        </div>
+      </div>
+
+      <div class="workbench">
+        <div class="panel">
+          <div class="panelHeader">
+            <h2>操作区</h2>
+            <span>导入 → 预处理 → 矢量化</span>
+          </div>
+          <div class="panelBody">
+            <div class="section">
+              <div class="sectionTitle">
+                <div>导入</div>
+                <div>PNG/JPG</div>
+              </div>
+              <div class="btnRow">
+                <button class="btn btnPrimary" type="button">选择文件</button>
+                <button class="btn" type="button">载入示例</button>
+              </div>
+              <div style="margin-top: 10px; font-size: 12px; color: var(--muted)">
+                支持拖入与粘贴。方向 A 更倾向把说明收敛到少量“关键提示”，避免长文块打断视线。
+              </div>
+            </div>
+
+            <div class="section">
+              <div class="sectionTitle">
+                <div>预处理</div>
+                <div>原图 / 预处理</div>
+              </div>
+              <div class="seg" id="tabSeg">
+                <button type="button" data-tab="raw" data-active="false">原图</button>
+                <button type="button" data-tab="pre" data-active="true">预处理</button>
+              </div>
+              <div class="range">
+                <div class="sectionTitle">
+                  <div>阈值</div>
+                  <div id="t1v">171</div>
+                </div>
+                <input id="t1" type="range" min="0" max="255" value="171" />
+              </div>
+              <div class="range">
+                <div class="sectionTitle">
+                  <div>边缘增强</div>
+                  <div id="t2v">50%</div>
+                </div>
+                <input id="t2" type="range" min="0" max="100" value="50" />
+              </div>
+            </div>
+
+            <div class="section">
+              <div class="sectionTitle">
+                <div>矢量化</div>
+                <div>质量 / 速度</div>
+              </div>
+              <div class="range">
+                <div class="sectionTitle">
+                  <div>节点数量</div>
+                  <div id="t3v">90%</div>
+                </div>
+                <input id="t3" type="range" min="0" max="100" value="90" />
+              </div>
+              <div class="btnRow">
+                <button class="btn btnPrimary" type="button">复制 SVG</button>
+                <button class="btn" type="button">下载 SVG</button>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="main">
+          <div class="mainTop">
+            <h2>预览区</h2>
+            <div class="actions">
+              <button class="actionBtn" id="toggleNodes" type="button" data-on="false">节点高亮</button>
+              <button class="actionBtn" type="button">复位</button>
+            </div>
+          </div>
+          <div class="split">
+            <div class="frame">
+              <div class="frameBar">
+                <span class="frameBadge">左</span>
+                <span id="leftLabel">预处理预览</span>
+              </div>
+              <div class="canvas">
+                <div class="canvasInner" id="imgBox" aria-label="图片预览">
+                  <svg viewBox="0 0 100 100" fill="none" aria-hidden="true">
+                    <path
+                      d="M18 28c0-6 4-10 10-10h44c6 0 10 4 10 10v44c0 6-4 10-10 10H28c-6 0-10-4-10-10V28Z"
+                      fill="rgba(255,255,255,0.92)"
+                    />
+                    <path
+                      d="M34 56 47 43c2-2 5-2 7 0l12 12c1 1 2 2 2 4v13H34V56Z"
+                      fill="rgba(255,255,255,0.92)"
+                    />
+                    <circle cx="66" cy="40" r="7" fill="rgba(255,255,255,0.92)" />
+                    <path
+                      d="M60 75c8 0 15-7 15-15S68 45 60 45"
+                      stroke="rgba(255,255,255,0.82)"
+                      stroke-width="6"
+                      stroke-linecap="round"
+                    />
+                  </svg>
+                </div>
+              </div>
+            </div>
+
+            <div class="frame">
+              <div class="frameBar">
+                <span class="frameBadge">右</span>
+                <span>SVG 预览</span>
+              </div>
+              <div class="canvas">
+                <div class="svgBoard" aria-label="SVG 结果预览">
+                  <svg viewBox="0 0 120 120" fill="none" aria-hidden="true">
+                    <path
+                      d="M22 34c0-7 5-12 12-12h52c7 0 12 5 12 12v52c0 7-5 12-12 12H34c-7 0-12-5-12-12V34Z"
+                      fill="#ffffff"
+                    />
+                    <path
+                      d="M39 68 55 52c2-2 6-2 8 0l15 15c2 2 3 4 3 7v19H39V68Z"
+                      fill="#ffffff"
+                    />
+                    <circle cx="78" cy="47" r="8" fill="#ffffff" />
+                    <g class="nodes">
+                      <circle cx="22" cy="34" r="2.2" fill="#6ee7ff" />
+                      <circle cx="34" cy="22" r="2.2" fill="#6ee7ff" />
+                      <circle cx="86" cy="22" r="2.2" fill="#6ee7ff" />
+                      <circle cx="98" cy="34" r="2.2" fill="#6ee7ff" />
+                      <circle cx="98" cy="86" r="2.2" fill="#6ee7ff" />
+                      <circle cx="86" cy="98" r="2.2" fill="#6ee7ff" />
+                      <circle cx="34" cy="98" r="2.2" fill="#6ee7ff" />
+                      <circle cx="22" cy="86" r="2.2" fill="#6ee7ff" />
+                      <circle cx="39" cy="68" r="2.2" fill="#6ee7ff" />
+                      <circle cx="55" cy="52" r="2.2" fill="#6ee7ff" />
+                      <circle cx="63" cy="52" r="2.2" fill="#6ee7ff" />
+                      <circle cx="78" cy="67" r="2.2" fill="#6ee7ff" />
+                    </g>
+                  </svg>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="guide">
+        <h3>方向说明（用来判断是否适合把真实项目往这边推）</h3>
+        <ul>
+          <li>布局重心：把“图像与结果”做成第一主角，控件退为第二层。</li>
+          <li>层级策略：减少卡片堆叠，更多用线、留白与字号关系建立秩序。</li>
+          <li>交互节奏：弱化“按钮堆”；让默认路径更清晰（导入即生成），高级项收敛。</li>
+          <li>适配建议：如果要维持大量参数，建议引入“高级设置折叠/抽屉”，避免面板过长。</li>
+        </ul>
+      </div>
+    </div>
+
+    <script>
+      const tabSeg = document.getElementById("tabSeg");
+      const leftLabel = document.getElementById("leftLabel");
+      const imgBox = document.getElementById("imgBox");
+      const toggleNodes = document.getElementById("toggleNodes");
+
+      function setTab(tab) {
+        const btns = tabSeg.querySelectorAll("button[data-tab]");
+        btns.forEach((b) => (b.dataset.active = b.dataset.tab === tab ? "true" : "false"));
+        leftLabel.textContent = tab === "raw" ? "原图预览" : "预处理预览";
+        imgBox.style.filter =
+          tab === "raw"
+            ? "none"
+            : "contrast(1.25) saturate(0.92) brightness(0.98)";
+      }
+
+      tabSeg.addEventListener("click", (e) => {
+        const btn = e.target.closest("button");
+        if (!btn) return;
+        setTab(btn.dataset.tab);
+      });
+
+      toggleNodes.addEventListener("click", () => {
+        const on = document.body.dataset.nodes === "on";
+        document.body.dataset.nodes = on ? "off" : "on";
+        toggleNodes.dataset.on = on ? "false" : "true";
+      });
+
+      function bindRange(id, out, fmt) {
+        const el = document.getElementById(id);
+        const label = document.getElementById(out);
+        const apply = () => (label.textContent = fmt(Number(el.value)));
+        el.addEventListener("input", apply);
+        apply();
+      }
+
+      bindRange("t1", "t1v", (v) => String(Math.round(v)));
+      bindRange("t2", "t2v", (v) => `${Math.round(v)}%`);
+      bindRange("t3", "t3v", (v) => `${Math.round(v)}%`);
+      setTab("pre");
+    </script>
+  </body>
+</html>
