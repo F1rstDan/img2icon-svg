@@ -4,6 +4,7 @@ import {
   CircleHelp,
   Copy,
   Download,
+  Github,
   Image,
   Sparkles,
   Scan,
@@ -162,6 +163,15 @@ export default function Home() {
                 生成 SVG…
               </div>
             ) : null}
+            <a
+              href="https://github.com/F1rstDan/img2icon-svg"
+              target="_blank"
+              rel="noreferrer"
+              className="inline-flex h-9 w-9 items-center justify-center rounded-xl bg-zinc-900/70 text-zinc-200 ring-1 ring-white/10 hover:bg-zinc-900"
+              aria-label="GitHub"
+            >
+              <Github className="h-4 w-4" />
+            </a>
             <div
               ref={helpRef}
               className="relative"
