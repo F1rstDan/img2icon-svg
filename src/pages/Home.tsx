@@ -142,12 +142,12 @@ export default function Home() {
         <div className="flex flex-wrap items-end justify-between gap-4">
           <div className="flex flex-wrap items-center gap-3">
             <div className="text-3xl font-semibold tracking-tight">
-              图片转SVG矢量图标
+              单色图标转 SVG 工具
             </div>
             <div className="inline-flex items-center gap-2 rounded-2xl bg-emerald-400/10 px-3 py-1 ring-1 ring-emerald-400/20">
               <Sparkles className="h-4 w-4 text-emerald-200" />
               <div className="text-sm text-emerald-100">
-                图像 → 干净 SVG 路径
+                位图图标 PNG/JPG → 可编辑 SVG 矢量路径
               </div>
             </div>
           </div>
