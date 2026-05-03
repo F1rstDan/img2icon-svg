@@ -21,9 +21,6 @@ export default defineConfig({
     VitePWA({
       registerType: 'autoUpdate',
       includeAssets: ['favicon.svg', 'pwa-192.png', 'pwa-512.png', 'apple-touch-icon.png'],
-      devOptions: {
-        enabled: true,
-      },
       manifest: {
         name: '图像转 SVG 矢量追踪',
         short_name: '图像转SVG',
